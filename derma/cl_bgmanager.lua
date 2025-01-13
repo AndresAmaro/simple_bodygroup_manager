@@ -15,80 +15,80 @@ end
 function PANEL:Fill(target)
     local client = target or LocalPlayer()
 
-    local headerTitle = self:Add("DLabel")
-    headerTitle:SetColor(ix.config.Get("colorEnfasisBGManager"))
-    headerTitle:Dock(TOP)
-    headerTitle:DockMargin(10,0,0,25)
-    headerTitle:SetFont("ixBigFont")
-    headerTitle:SetText("Simple Bodygroup Manager: " .. client:Name())
-    headerTitle:SetContentAlignment(5)
-    headerTitle:SizeToContents()
+    self.headerTitle = self:Add("DLabel")
+    self.headerTitle:SetColor(ix.config.Get("colorEnfasisBGManager"))
+    self.headerTitle:Dock(TOP)
+    self.headerTitle:DockMargin(10,0,0,25)
+    self.headerTitle:SetFont("ixBigFont")
+    self.headerTitle:SetText("Modifying the bodygroups of: " .. client:Name())
+    self.headerTitle:SetContentAlignment(5)
+    self.headerTitle:SizeToContents()
 
-    local displayCharacter = self:Add("DAdjustableModelPanel")
-    displayCharacter:Dock(LEFT)
-    displayCharacter:SetSize(ScrW() * 0.25 , ScrH() * 0.6)
-    displayCharacter:SetModel(client:GetModel())
-    displayCharacter.LayoutEntity = function(ent) return end
-    displayCharacter:SetFOV(50)
+    self.displayCharacter = self:Add("DAdjustableModelPanel")
+    self.displayCharacter:Dock(LEFT)
+    self.displayCharacter:SetSize(ScrW() * 0.25 , ScrH() * 0.6)
+    self.displayCharacter:SetModel(client:GetModel())
+    self.displayCharacter.LayoutEntity = function(ent) return end
+    self.displayCharacter:SetFOV(50)
 
-    displayCharacter.Entity:SetSkin(client:GetSkin())
+    self.displayCharacter.Entity:SetSkin(client:GetSkin())
 
     local colorJugador = client:GetPlayerColor()
-    displayCharacter.Entity.GetPlayerColor = function() return colorJugador end
+    self.displayCharacter.Entity.GetPlayerColor = function() return colorJugador end
 
     for i = 0, client:GetNumBodyGroups() - 1 do
-        displayCharacter:GetEntity():SetBodygroup(i, client:GetBodygroup(i))
+        self.displayCharacter:GetEntity():SetBodygroup(i, client:GetBodygroup(i))
     end
 
-    displayCharacter.Entity:SetAngles(Angle(0, 180, 0))
-    displayCharacter:SetDirectionalLight(BOX_BACK, color_white)
+    self.displayCharacter.Entity:SetAngles(Angle(0, 180, 0))
+    self.displayCharacter:SetDirectionalLight(BOX_BACK, color_white)
 
     -- Forzamos un click izquierdo en el panel para que se muestre el modelo desde un inicio
-    displayCharacter:OnMousePressed(MOUSE_LEFT)
+    self.displayCharacter:OnMousePressed(MOUSE_LEFT)
     timer.Simple(0.1, function()
-        displayCharacter:OnMouseReleased(MOUSE_LEFT)
+        self.displayCharacter:OnMouseReleased(MOUSE_LEFT)
     end)
 
-    local contenedorBg = self:Add("DScrollPanel")
-    contenedorBg:SetWide(self:GetWide() * 0.25)
-    contenedorBg:Dock(FILL)
+    self.contenedorBg = self:Add("DScrollPanel")
+    self.contenedorBg:SetWide(self:GetWide() * 0.25)
+    self.contenedorBg:Dock(FILL)
 
-    local barraContenedor = contenedorBg:GetVBar()
-    barraContenedor.btnGrip.Paint = function(_, w, h)
+    self.barraContenedor = self.contenedorBg:GetVBar()
+    self.barraContenedor.btnGrip.Paint = function(_, w, h)
         draw.RoundedBox(30,0,0,w * 0.2,h,ix.config.Get("colorEnfasisBGManager"))
     end
-    contenedorBg.Paint = function(_, w, h)
+    self.contenedorBg.Paint = function(_, w, h)
         draw.RoundedBox(15,0,0,w,h,Color(49, 49, 49, 100))
     end
 
 
-    local skinLabel = contenedorBg:Add("ixLabel")
-    skinLabel:Dock(TOP)
-    skinLabel:DockMargin(10, 10, 0, 5)
-    skinLabel:SetFont("ixMediumFont")
-    skinLabel:SetText("Skin")
-    skinLabel:SetTextColor(ix.config.Get("colorEnfasisBGManager"))
-    skinLabel:SetContentAlignment(7)
+    self.skinLabel = self.contenedorBg:Add("ixLabel")
+    self.skinLabel:Dock(TOP)
+    self.skinLabel:DockMargin(10, 10, 0, 5)
+    self.skinLabel:SetFont("ixMediumFont")
+    self.skinLabel:SetText("Skin")
+    self.skinLabel:SetTextColor(ix.config.Get("colorEnfasisBGManager"))
+    self.skinLabel:SetContentAlignment(7)
 
-    local skinSlider = contenedorBg:Add("DNumSlider")
-    skinSlider:Dock(TOP)
-    skinSlider:SetContentAlignment(7)
-    skinSlider:DockMargin(10, 10, 0, 5)
-    skinSlider:SetMin(0)
-    skinSlider:SetMax(client:SkinCount())
-    skinSlider:SetDecimals(0)
-    skinSlider.OnValueChanged = function(_, val)
-        displayCharacter.Entity:SetSkin(val)
+    self.skinSlider = self.contenedorBg:Add("DNumSlider")
+    self.skinSlider:Dock(TOP)
+    self.skinSlider:SetContentAlignment(7)
+    self.skinSlider:DockMargin(10, 10, 0, 5)
+    self.skinSlider:SetMin(0)
+    self.skinSlider:SetMax(client:SkinCount())
+    self.skinSlider:SetDecimals(0)
+    self.skinSlider.OnValueChanged = function(_, val)
+        self.displayCharacter.Entity:SetSkin(val)
     end
 
-    for _, subPanel in ipairs(skinSlider:GetChildren()) do
+    for _, subPanel in ipairs(self.skinSlider:GetChildren()) do
         if (subPanel:GetName() != "DLabel") then continue end
         subPanel:ToggleVisible()
     end
 
     for _, bgData in ipairs(client:GetBodyGroups()) do
         if (#bgData.submodels < 1) then continue end
-        local nombreBodygroup = contenedorBg:Add("ixLabel")
+        local nombreBodygroup = self.contenedorBg:Add("ixLabel")
         nombreBodygroup:Dock(TOP)
         nombreBodygroup:DockMargin(10, 10, 0, 5)
         nombreBodygroup:SetFont("ixMediumFont")
@@ -96,7 +96,7 @@ function PANEL:Fill(target)
         nombreBodygroup:SetTextColor(ix.config.Get("colorEnfasisBGManager"))
         nombreBodygroup:SetContentAlignment(7)
 
-        local bgBarra = contenedorBg:Add("DNumSlider")
+        local bgBarra = self.contenedorBg:Add("DNumSlider")
         bgBarra:Dock(TOP)
         bgBarra:SetContentAlignment(7)
         bgBarra:DockMargin(10, 10, 0, 5)
@@ -113,34 +113,34 @@ function PANEL:Fill(target)
             subPanel:SetVisible(false)
         end
 
-        -- 
+        -- Realtime update of the bodygroups in the preview
         bgBarra.OnValueChanged = function(_, val)
-            displayCharacter.Entity:SetBodygroup(bgData.id, val)
+            self.displayCharacter.Entity:SetBodygroup(bgData.id, val)
         end
     end
 
 
 
-    local buttonContainer = self:Add("DPanel")
-    buttonContainer:Dock(BOTTOM)
-    buttonContainer:DockMargin(0, 10, 0, 10)
-    buttonContainer.Paint = function() return end
+    self.buttonContainer = self:Add("DPanel")
+    self.buttonContainer:Dock(BOTTOM)
+    self.buttonContainer:DockMargin(0, 10, 0, 10)
+    self.buttonContainer.Paint = function() return end
 
-    local button = buttonContainer:Add("DButton")
-    button:Dock(FILL)
-    button:SetText("Save")
-    button:SetFont("ixMediumFont")
-    button:SetContentAlignment(5)
-    button:SizeToContents()
+    self.button = self.buttonContainer:Add("DButton")
+    self.button:Dock(FILL)
+    self.button:SetText("Save")
+    self.button:SetFont("ixMediumFont")
+    self.button:SetContentAlignment(5)
+    self.button:SizeToContents()
 
-    button.Paint = function(_, w, h)
+    self.button.Paint = function(_, w, h)
         draw.RoundedBox(5,0,0,w,h, ix.config.Get("saveButtonColor"))
     end
 
-    button.DoClick = function()
+    self.button.DoClick = function()
         local tblBodygroups = {}
-        for i = 0, displayCharacter.Entity:GetNumBodyGroups() - 1 do
-            tblBodygroups[i] = displayCharacter.Entity:GetBodygroup(i)
+        for i = 0, self.displayCharacter.Entity:GetNumBodyGroups() - 1 do
+            tblBodygroups[i] = self.displayCharacter.Entity:GetBodygroup(i)
         end
 
         net.Start("SBMSaveBodygroups")

@@ -23,7 +23,7 @@ SBM.config = SBM.config or {}
 SBM.banned = SBM.banned or {} -- List of STEAMIDs that no matter what will not be able to use the menu without interacting with the entity
 SBM.config.keyOptions = {
     factionBypass = { -- Factions that would be able to use the menu by using the key even if the 'allowKeyUse' setting above is set to false by adding its unique id
-        ministerio = true
+        ministerio = true -- Just an example of how to add factions. Just add the uniqueID
     },
     key = KEY_F9
 
